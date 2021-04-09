@@ -49,7 +49,7 @@ public class ApiTest {
 
         try {
             byte[] bytes = aesDecrypt(Base64.getDecoder().decode(aesKey), resp);
-            System.out.println("<==auth resp:" +  new String(bytes));
+            System.out.println("<==auth success, resp:" +  new String(bytes));
         } catch (Exception e) {
             System.out.println("<== aesDecrypt error");
             System.out.println("<==auth resp:" + new String(resp));
@@ -64,9 +64,18 @@ public class ApiTest {
         commonInput.setEndDate("2021-01-01");
         byte[] aesKeyBytes = Base64.getDecoder().decode(aesKey);
 
-        byte[] resp_ = HttpUtils.postJSON(url + "/xwallet/api/clients", aesEncrypt(aesKeyBytes, JSON.toJSONString(commonInput).getBytes()), new HashMap<>());
-        byte[] bytes = aesDecrypt(aesKeyBytes, resp_);
-        System.out.println(new String(bytes));
+        byte[] resp = HttpUtils.postJSON(url + "/xwallet/api/clients", aesEncrypt(aesKeyBytes, JSON.toJSONString(commonInput).getBytes()), new HashMap<>());
+        try {
+            byte[] bytes = aesDecrypt(aesKeyBytes, resp);
+            System.out.println(new String(bytes));
+        } catch (Exception e) {
+            /**
+             * decryptError
+             */
+            System.out.println("<==aes key error :" + new String(resp));
+        }
+
+
     }
 
 
