@@ -1,7 +1,6 @@
 import com.alibaba.fastjson.JSON;
 import com.brazil.irs.encrypt.AesGcmEncryption;
 import com.brazil.irs.encrypt.AuthenticatedEncryptionException;
-import com.brazil.irs.encrypt.RSAEncryption;
 import com.brazil.irs.params.Params;
 import com.brazil.irs.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -9,13 +8,10 @@ import org.junit.Test;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class ApiTest {
@@ -31,15 +27,17 @@ public class ApiTest {
      * merchant
      */
     private static final String url2 = "https://brazil-irs-datatransfer-fat-2.pundix.com/merchant";
-    //private static final String url = "http://127.0.0.1:4112";
+    //private static final String url = "http://127.0.0.1:4112/xwallet";
     //private static final String rsaPubKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANBWkax6HVWs7b7D6AdluAL2zc6mafWm3a1CiqvFhjuQ2E3sJrUti6tyxvUjI6r2zAuTSkck0IJ4ZRvpFIDOqJMCAwEAAQ==";
 
 
-    private static final String aesKey = "HLA+pcYZc2dl4QnN6erPxA==";
+    private static final String aesSecret = "HLA+pcYZc2dl4QnN6erPxA==";
+    private static final String authentication = "f5952595f9264856b8bde8e910032d4c";
 
-
-
-
+    private static final Map<String, String> headers = new HashMap<>();
+    static {
+        headers.put("authentication", authentication);
+    }
 
 
 
@@ -48,9 +46,9 @@ public class ApiTest {
         Params.CommonInput commonInput = new Params.CommonInput();
         commonInput.setStartDate("2018-01-01");
         commonInput.setEndDate("2021-01-01");
-        byte[] aesKeyBytes = Base64.getDecoder().decode(aesKey);
+        byte[] aesKeyBytes = Base64.getDecoder().decode(aesSecret);
 
-        byte[] resp = HttpUtils.postJSON(url + "/api/clients", aesEncrypt(aesKeyBytes, JSON.toJSONString(commonInput).getBytes()), new HashMap<>());
+        byte[] resp = HttpUtils.postJSON(url + "/api/clients", aesEncrypt(aesKeyBytes, JSON.toJSONString(commonInput).getBytes()), headers);
         try {
             byte[] bytes = aesDecrypt(aesKeyBytes, resp);
             System.out.println(new String(bytes));
