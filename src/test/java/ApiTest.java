@@ -21,40 +21,19 @@ import java.util.HashMap;
 public class ApiTest {
 
 
-    private static final String pri_key = "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEA0FaRrHodVaztvsPoB2W4AvbNzqZp9abdrUKKq8WGO5DYTewmtS2Lq3LG9SMjqvbMC5NKRyTQgnhlG+kUgM6okwIDAQABAkEAhCEjKlwYFqoh7gaZNXfRiC+2vwTT1rQJi0TUZbRUOZmyZPUXBKeaS1aSRaISZNg3jP873xbb/fDlud/6JqNngQIhAOgZ5UNJk13i9+C5ukizdb9n/4nvwPxZ/fU5glNmWHGRAiEA5cpKEqNdFhbRyHg8SZFR0YDfHBL7TQVXQgS1tvx4JeMCIQC4k89k4WAWa+cgidMA+eaL3xKzCT158b8qgx+HX366YQIhAOVfeXUFUMPd32XmbvdYcX1Y0FxrriGBtUoW/XQ8q4nVAiAxkPXpVEkdz9KK+488lJrwblB9mf6cOIsY48s2U7VpVA==";
+    //private static final String pri_key = "MIIBVgIBADANBgkqhkiG9w0BAQEFAASCAUAwggE8AgEAAkEA0FaRrHodVaztvsPoB2W4AvbNzqZp9abdrUKKq8WGO5DYTewmtS2Lq3LG9SMjqvbMC5NKRyTQgnhlG+kUgM6okwIDAQABAkEAhCEjKlwYFqoh7gaZNXfRiC+2vwTT1rQJi0TUZbRUOZmyZPUXBKeaS1aSRaISZNg3jP873xbb/fDlud/6JqNngQIhAOgZ5UNJk13i9+C5ukizdb9n/4nvwPxZ/fU5glNmWHGRAiEA5cpKEqNdFhbRyHg8SZFR0YDfHBL7TQVXQgS1tvx4JeMCIQC4k89k4WAWa+cgidMA+eaL3xKzCT158b8qgx+HX366YQIhAOVfeXUFUMPd32XmbvdYcX1Y0FxrriGBtUoW/XQ8q4nVAiAxkPXpVEkdz9KK+488lJrwblB9mf6cOIsY48s2U7VpVA==";
 
     private static final String url = "https://brazil-irs-datatransfer-fat-2.pundix.com";
-    private static final String rsaPubKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANBWkax6HVWs7b7D6AdluAL2zc6mafWm3a1CiqvFhjuQ2E3sJrUti6tyxvUjI6r2zAuTSkck0IJ4ZRvpFIDOqJMCAwEAAQ==";
+    //private static final String url = "http://127.0.0.1:4112";
+    //private static final String rsaPubKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANBWkax6HVWs7b7D6AdluAL2zc6mafWm3a1CiqvFhjuQ2E3sJrUti6tyxvUjI6r2zAuTSkck0IJ4ZRvpFIDOqJMCAwEAAQ==";
 
 
-    private static final String aesKey = "bcJ17yKisbOOBWlPjaDZKA==";
-
-    @Test
-    public void createAesKey() throws NoSuchAlgorithmException {
-        byte[] aesKeyBytes = getAesKeyBytes();
-        String aeskey = Base64.getEncoder().encodeToString(aesKeyBytes);
-        System.out.println(aeskey);
-    }
+    private static final String aesKey = "HLA+pcYZc2dl4QnN6erPxA==";
 
 
 
 
-    @Test
-    public void testAuth() throws Exception {
 
-        Params.AuthInput authInput = new Params.AuthInput();
-        authInput.setAesSecret(aesKey);
-        String json = JSON.toJSON(authInput).toString();
-        byte[] resp = HttpUtils.postJSON(url + "/auth", rsaEncrypt(json), new HashMap<>());
-
-        try {
-            byte[] bytes = aesDecrypt(Base64.getDecoder().decode(aesKey), resp);
-            System.out.println("<==auth success, resp:" +  new String(bytes));
-        } catch (Exception e) {
-            System.out.println("<== aesDecrypt error");
-            System.out.println("<==auth resp:" + new String(resp));
-        }
-    }
 
 
     @Test
@@ -81,20 +60,6 @@ public class ApiTest {
 
 
 
-
-    public static byte[] rsaEncrypt(String json) throws GeneralSecurityException {
-        RSAPublicKey rsaPublicKey = RSAEncryption.generatePublicKey(Base64.getDecoder().decode(rsaPubKey));
-        RSAEncryption rsaEncryption = new RSAEncryption(rsaPublicKey, null);
-        return rsaEncryption.encrypt(json.getBytes(StandardCharsets.UTF_8));
-    }
-
-
-    public static byte[] rsaDecrypt(String reqStr) throws GeneralSecurityException {
-        System.out.println(reqStr);
-        RSAPrivateKey rsaPrivateKey = RSAEncryption.generatePrivateKey(Base64.getDecoder().decode(pri_key));
-        RSAEncryption rsaEncryption = new RSAEncryption(null, rsaPrivateKey);
-        return rsaEncryption.decrypt(reqStr.getBytes(StandardCharsets.UTF_8));
-    }
 
 
     public static byte[] aesDecrypt(byte[] aesKey, byte[] resp) throws AuthenticatedEncryptionException {
